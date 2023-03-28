@@ -1,5 +1,7 @@
 const resultado = document.querySelector("#resultado");
 const formulario = document.querySelector("#formulario");
+const resgistrosPorPagina = 40;
+let totalPaginas;
 
 window.onload = () => {
   formulario.addEventListener("submit", validarFormulario);
@@ -15,67 +17,68 @@ function validarFormulario(e) {
     return;
   }
 
-buscarImagenes(terminoBusqueda);
-
+  buscarImagenes(terminoBusqueda);
 }
 
 function mostrarAlerta(mensaje) {
+  const existeAlerta = document.querySelector(".bg-red-100");
 
-    const existeAlerta = document.querySelector(".bg-red-100");
+  if (existeAlerta) {
+    // Si ya existe una alerta, no necesitamos crear una nueva
+    existeAlerta.querySelector("span").textContent = mensaje;
+  } else {
+    const alerta = document.createElement("p");
+    alerta.classList.add(
+      "bg-red-100",
+      "border-red-100",
+      "text-red-700",
+      "px-4",
+      "py-3",
+      "rounded",
+      "max-w-lg",
+      "mx-auto",
+      "mt-6",
+      "text-center"
+    );
 
-    if (existeAlerta) {
-        // Si ya existe una alerta, no necesitamos crear una nueva
-        existeAlerta.querySelector('span').textContent = mensaje;
-    } else {
-        const alerta = document.createElement("p");
-        alerta.classList.add(
-            "bg-red-100",
-            "border-red-100",
-            "text-red-700",
-            "px-4",
-            "py-3",
-            "rounded",
-            "max-w-lg",
-            "mx-auto",
-            "mt-6",
-            "text-center"
-        );
-        
-        alerta.innerHTML = `
+    alerta.innerHTML = `
             <strong class="font-bold">Error!</strong>
             <span class="block sm:inline">${mensaje}</span>  
-        `
-        formulario.appendChild(alerta);
+        `;
+    formulario.appendChild(alerta);
 
-        setTimeout(() => {
-            alerta.remove();
-        }, 3000);
-    }
+    setTimeout(() => {
+      alerta.remove();
+    }, 3000);
+  }
 }
 
-    
 function buscarImagenes(termino) {
-    const key = "30523531-2152215c497e522a971c7e0eb";
-    const url = `https://pixabay.com/api/?key=${key}&q=${termino}&per_page=50`;
+  const key = "30523531-2152215c497e522a971c7e0eb";
+  const url = `https://pixabay.com/api/?key=${key}&q=${termino}&per_page=54`;
 
-    fetch(url)
-    .then (response => response.json())
-    .then (result => {
-        mostrarImagenes(result.hits);
+  fetch(url)
+    .then((response) => response.json())
+    .then((result) => {
+      totalPaginas = calcularPaginas(result.totalHits);
 
-    }
-        )
+      mostrarImagenes(result.hits);
+    });
+}
+
+function calcularPaginas(total) {
+  return parseInt(Math.ceil(total / resgistrosPorPagina));
 }
 
 function mostrarImagenes(images) {
-    const result = document.querySelector("#resultado");
-  
-    // Vaciar contenido anterior
-    result.innerHTML = "";
-  
-    images.forEach((image) => {
-      const { previewURL , likes , views , largeImageURL } = image;
-      result.innerHTML += `
+  const result = document.querySelector("#resultado");
+
+  // Vaciar contenido anterior
+  result.innerHTML = "";
+
+  images.forEach((image) => {
+    const { previewURL, likes, views, largeImageURL } = image;
+    result.innerHTML += `
       <div class="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 p-4 mb-4">
   <div class="bg-white shadow-md rounded-md overflow-hidden">
     <img class="w-full h-48 object-cover" src="${previewURL}" alt="Imagen">
@@ -89,6 +92,5 @@ function mostrarImagenes(images) {
 
 
       `;
-    });
-  }
-  
+  });
+}
