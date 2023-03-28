@@ -66,6 +66,17 @@ function buscarImagenes(termino) {
     });
 }
 
+//*Generador que va a registrar la cantidad de elementos.
+
+function *crearPaginador(total) {
+  for (let i = 1 ; i >= total ; i++) {
+  console.log(i);
+
+  }
+  
+}
+
+
 function calcularPaginas(total) {
   return parseInt(Math.ceil(total / resgistrosPorPagina));
 }
@@ -93,4 +104,7 @@ function mostrarImagenes(images) {
 
       `;
   });
+
+const iterador = crearPaginador(totalPaginas);
+console.log(iterador.next());
 }
